@@ -125,3 +125,51 @@ exports.downloadDocument = (req, res) => {
 
     fileStream.pipe(res);
 };
+
+
+exports.editPodryad = async (req, res) => {
+    try {
+      const { rowData } = req.body;
+      const {
+        id: rowNumber, 
+        namecontr, inn, soprdocs
+      } = rowData;
+  
+    //   const photo = rowData.photo ? JSON.stringify(rowData.photo) : '[]';
+  
+      console.log('Updating row:', rowNumber);
+      console.log('With data:', rowData);
+  
+      const editPodryad = await db.query(
+        `UPDATE podryad 
+         SET namecontr = $1, inn = $2, soprdocs = $3
+         WHERE id = $4 
+         RETURNING *`,
+        [ namecontr, inn, soprdocs, rowNumber ]
+      );
+  
+      if (editPodryad.rows.length === 0) {
+        return res.status(404).json({
+          statusCode: 404,
+          status: false,
+          message: 'Контейнер не найден',
+        });
+      }
+  
+      res.status(200).json({
+        statusCode: 200,
+        status: true,
+        message: 'Контейнер обновлен успешно',
+        data: editPodryad.rows[0]
+      });
+    } catch (error) {
+      console.error('Error updating data:', error);
+      res.status(500).json({
+        statusCode: 500,
+        status: false,
+        message: 'Произошла ошибка при обновлении контейнера',
+        error: error.message
+      });
+    }
+  };
+  

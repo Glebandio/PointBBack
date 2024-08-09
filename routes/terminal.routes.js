@@ -6,6 +6,6 @@ router.post('/api/terminal', terminalController.uploadTerminal, terminalControll
 router.get('/api/terminals', terminalController.getTerminals);
 router.get('/api/terminalsforzakup', terminalController.getTerminalsForZakup)
 router.get('/uploads/images/:filename', terminalController.downloadDocumentPhoto);
-
+router.post('/api/editTerminal', terminalController.editTerminal)
 
 module.exports = router;

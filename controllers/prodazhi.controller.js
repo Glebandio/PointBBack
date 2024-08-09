@@ -91,3 +91,50 @@ exports.postProdazh = async (req,res) => {
         });
     }
 }
+
+exports.editProdazhi = async (req, res) => {
+    try {
+      const { rowData } = req.body;
+      const {
+        id: rowNumber, 
+        klient, datas, status, stoimost, marzha, vid, nds, kolvo, city, manager, containers
+      } = rowData;
+  
+    //   const photo = rowData.photo ? JSON.stringify(rowData.photo) : '[]';
+  
+      console.log('Updating row:', rowNumber);
+      console.log('With data:', rowData);
+  
+      const editProdazhi = await db.query(
+        `UPDATE prodazhi 
+         SET klient = $1, datas = $2, status = $3, stoimost = $4, marzha = $5, vid = $6, nds = $7, kolvo = $8, city = $9, manager = $10, containers = $11
+         WHERE id = $12 
+         RETURNING *`,
+        [klient, datas, status, stoimost, marzha, vid, nds, kolvo, city, manager, containers, rowNumber]
+      );
+  
+      if (editProdazhi.rows.length === 0) {
+        return res.status(404).json({
+          statusCode: 404,
+          status: false,
+          message: 'Контейнер не найден',
+        });
+      }
+  
+      res.status(200).json({
+        statusCode: 200,
+        status: true,
+        message: 'Контейнер обновлен успешно',
+        data: editRemont.rows[0]
+      });
+    } catch (error) {
+      console.error('Error updating data:', error);
+      res.status(500).json({
+        statusCode: 500,
+        status: false,
+        message: 'Произошла ошибка при обновлении контейнера',
+        error: error.message
+      });
+    }
+  };
+  

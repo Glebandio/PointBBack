@@ -7,5 +7,6 @@ router.post('/api/Podryad', upload, podryadController.addPodryad);
 router.get('/api/Podryad', podryadController.getPodryad);
 router.get('/api/download/:filename', podryadController.downloadDocument);
 router.get('/api/forzakup', podryadController.getForZakup )
+router.post('/api/editPodryad', podryadController.editPodryad)
 
 module.exports = router;

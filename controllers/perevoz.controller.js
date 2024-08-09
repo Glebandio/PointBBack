@@ -160,3 +160,50 @@ exports.getContsEnd = async (req,res) => {
         }); 
     }
 }
+
+exports.editPerevoz = async (req, res) => {
+    try {
+      const { rowData } = req.body;
+      const {
+        id: rowNumber, 
+        podryad, date, kolvo, citya, terminala, stocka, cityb, terminalb, stockb, price, statusopl, manager, stavkasnp, kolvodays, numcont, tip
+      } = rowData;
+  
+    //   const photo = rowData.photo ? JSON.stringify(rowData.photo) : '[]';
+  
+      console.log('Updating row:', rowNumber);
+      console.log('With data:', rowData);
+  
+      const editPerevoz = await db.query(
+        `UPDATE perevoz 
+         SET podryad = $1, date = $2, kolvo = $3, citya = $4, terminala = $5, stocka = $6, cityb = $7, terminalb = $8, stockb = $9, price = $10, statusopl = $11, manager = $12, stavkasnp = $13, kolvodays = $14, numcont = $15, tip = $16
+         WHERE id = $17 
+         RETURNING *`,
+        [podryad, date, kolvo, citya, terminala, stocka, cityb, terminalb, stockb, price, statusopl, manager, stavkasnp, kolvodays, numcont, tip, rowNumber]
+      );
+  
+      if (editPerevoz.rows.length === 0) {
+        return res.status(404).json({
+          statusCode: 404,
+          status: false,
+          message: 'Контейнер не найден',
+        });
+      }
+  
+      res.status(200).json({
+        statusCode: 200,
+        status: true,
+        message: 'Контейнер обновлен успешно',
+        data: editPerevoz.rows[0]
+      });
+    } catch (error) {
+      console.error('Error updating data:', error);
+      res.status(500).json({
+        statusCode: 500,
+        status: false,
+        message: 'Произошла ошибка при обновлении контейнера',
+        error: error.message
+      });
+    }
+  };
+  

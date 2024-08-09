@@ -8,6 +8,6 @@ router.get('/api/naremont', remontController.listRemont)
 router.get('/api/remont', remontController.remont)
 router.get('/api/sremont', remontController.fromRemont)
 router.post('/api/fromremont',remontController.uploadRemont, remontController.update);
-
+router.post('/api/editRemont', remontController.editRemont)
 
 module.exports = router;

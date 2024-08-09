@@ -8,6 +8,6 @@ router.get('/api/svod', svodController.getSvod);
 
 router.get('/api/download/:filename', svodController.downloadDocument);
 
-// router.get('/api/forarchiv', svodController.getForZakup )
+router.post('/api/editSvod', svodController.editSvod)
 
 module.exports = router;

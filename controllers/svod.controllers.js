@@ -121,3 +121,51 @@ exports.downloadDocument = (req, res) => {
 
     fileStream.pipe(res);
 };
+
+exports.editSvod = async (req, res) => {
+    try {
+      const { rowData } = req.body;
+      const {
+        id: rowNumber, // Extracting the id from rowData as rowNumber
+        country, city, terminal, stock, numcont, yom, tip, sost, sebes, podryad, dataprih,
+        bron, bronprih, statusopl // Adjust the column names if necessary
+      } = rowData;
+  
+      const photo = rowData.photo ? JSON.stringify(rowData.photo) : '[]';
+  
+      console.log('Updating row:', rowNumber);
+      console.log('With data:', rowData);
+  
+      const editSvod = await db.query(
+        `UPDATE svod 
+         SET country = $1, city = $2, terminal = $3, stock = $4, numcont = $5, photo = $6, yom = $7, tip = $8, sost = $9, sebes = $10, podryad = $11, dataprih = $12, bron = $13, bronprih = $14, statusopl = $15 
+         WHERE id = $16 
+         RETURNING *`,
+        [country, city, terminal, stock, numcont, photo, yom, tip, sost, sebes, podryad, dataprih, bron, bronprih, statusopl, rowNumber]
+      );
+  
+      if (editSvod.rows.length === 0) {
+        return res.status(404).json({
+          statusCode: 404,
+          status: false,
+          message: 'Контейнер не найден',
+        });
+      }
+  
+      res.status(200).json({
+        statusCode: 200,
+        status: true,
+        message: 'Контейнер обновлен успешно',
+        data: editSvod.rows[0]
+      });
+    } catch (error) {
+      console.error('Error updating data:', error);
+      res.status(500).json({
+        statusCode: 500,
+        status: false,
+        message: 'Произошла ошибка при обновлении контейнера',
+        error: error.message
+      });
+    }
+  };
+  

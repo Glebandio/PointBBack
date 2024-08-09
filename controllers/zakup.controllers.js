@@ -137,3 +137,51 @@ exports.downloadDocument = (req, res) => {
 
     fileStream.pipe(res);
 };
+
+exports.editZakup = async (req, res) => {
+    try {
+      const { rowData } = req.body;
+      const {
+        id: rowNumber, // Extracting the id from rowData as rowNumber
+        country, city, terminal, stock, numcont, tip, yom, sost, vidras, costzak, nds, gtd, podryad, dataprih,
+        statusopl, termhran, rprcon, prr, izder, comm, maneger
+      } = rowData;
+  
+      const photo = rowData.photo ? JSON.stringify(rowData.photo) : '[]';
+  
+      console.log('Updating row:', rowNumber);
+      console.log('With data:', rowData);
+  
+      const editZakup = await db.query(
+        `UPDATE zakup 
+         SET country = $1, city = $2, terminal = $3, stock = $4, numcont = $5, tip = $6, photo = $7, yom = $8, sost = $9, vidras = $10, costzak = $11, nds = $12, gtd = $13, podryad = $14, dataprih = $15, statusopl = $16, termhran = $17, rprcon = $18, prr = $19, izder = $20, comm = $21, maneger = $22
+         WHERE id = $23 
+         RETURNING *`,
+        [country, city, terminal, stock, numcont, tip, photo, yom, sost, vidras, costzak, nds, gtd, podryad, dataprih,
+            statusopl, termhran, rprcon, prr, izder, comm, maneger, rowNumber]
+      );
+  
+      if (editZakup.rows.length === 0) {
+        return res.status(404).json({
+          statusCode: 404,
+          status: false,
+          message: 'Контейнер не найден',
+        });
+      }
+  
+      res.status(200).json({
+        statusCode: 200,
+        status: true,
+        message: 'Контейнер обновлен успешно',
+        data: editZakup.rows[0]
+      });
+    } catch (error) {
+      console.error('Error updating data:', error);
+      res.status(500).json({
+        statusCode: 500,
+        status: false,
+        message: 'Произошла ошибка при обновлении контейнера',
+        error: error.message
+      });
+    }
+  };

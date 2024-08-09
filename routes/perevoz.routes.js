@@ -8,5 +8,6 @@ router.get('/api/perevpodr', Perevoz.PerevPodr)
 router.get('/api/perevozcont', Perevoz.PerevozCont)
 router.post('/api/perevozadd', Perevoz.PerevozAdd)
 router.get('/api/perevozendcont', Perevoz.getContsEnd)
+router.post('/api/editPerevoz', Perevoz.editPerevoz)
 
 module.exports = router;

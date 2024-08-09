@@ -228,3 +228,53 @@ exports.remont = async (req,res) => {
     }
 
 }
+
+
+exports.editRemont = async (req, res) => {
+    try {
+      const { rowData } = req.body;
+      const {
+        id: rowNumber, // Extracting the id from rowData as rowNumber
+        country, city, terminal, stock, adress, mail, phone, worktime, mechvid, prr20dc, prr40hc,
+        storppr20, storprr40, accs // Adjust the column names if necessary
+      } = rowData;
+  
+      const photo = rowData.photo ? JSON.stringify(rowData.photo) : '[]';
+  
+      console.log('Updating row:', rowNumber);
+      console.log('With data:', rowData);
+  
+      const editRemont = await db.query(
+        `UPDATE terminal 
+         SET country = $1, city = $2, terminal = $3, stock = $4, adress = $5, mail = $6, phone = $7, worktime = $8, mechvid = $9, prr20dc = $10, prr40hc = $11, storppr20 = $12, storprr40 = $13, photo = $14, accs = $15 
+         WHERE id = $16 
+         RETURNING *`,
+        [country, city, terminal, stock, adress, mail, phone, worktime, mechvid, prr20dc, prr40hc,
+            storppr20, storprr40, photo, accs, rowNumber]
+      );
+  
+      if (editRemont.rows.length === 0) {
+        return res.status(404).json({
+          statusCode: 404,
+          status: false,
+          message: 'Контейнер не найден',
+        });
+      }
+  
+      res.status(200).json({
+        statusCode: 200,
+        status: true,
+        message: 'Контейнер обновлен успешно',
+        data: editRemont.rows[0]
+      });
+    } catch (error) {
+      console.error('Error updating data:', error);
+      res.status(500).json({
+        statusCode: 500,
+        status: false,
+        message: 'Произошла ошибка при обновлении контейнера',
+        error: error.message
+      });
+    }
+  };
+  
