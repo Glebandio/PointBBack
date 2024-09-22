@@ -19,6 +19,33 @@ exports.getProdazhi = async (req,res) => {
     }
 };
 
+exports.getInfo = async(req,res) => {
+    try {
+        const {id} = req.body
+
+        const info = await db.query(
+            'SELECT * FROM prodazhi WHERE id = $1', 
+            [id]
+        );
+
+        res.status(200).json({
+            statusCode: 200,
+            status: true,
+            message: 'Данные успешно получены',
+            data: info.rows[0]
+        });
+
+    } catch (error) {
+        console.error('Error inserting data:', error);
+        res.status(500).json({
+            statusCode: 500,
+            status: false,
+            message: 'Произошла ошибка при получении контейнера',
+            error: error.message
+        });
+    }
+}
+
 exports.getConts = async (req,res) => {
     try {
         
@@ -137,4 +164,39 @@ exports.editProdazhi = async (req, res) => {
       });
     }
   };
-  
+
+
+
+
+exports.editInfo = async(req, res) =>{
+    try {
+
+        const {
+             klient, datas, status, marzha, stoimost, vid, nds, kolvo, city, manager, containers, id
+        } = req.body;
+
+
+        const editInfo = db.query(
+            `UPDATE prodazhi 
+            SET klient = $1, datas = $2, status = $3, marzha = $4, stoimost = $5, vid = $6, nds = $7, kolvo = $8, city = $9, manager = $10, containers = $11
+            WHERE id = $12
+            RETURNING *`,
+            [ klient, datas, status, marzha, stoimost, vid, nds, kolvo, city, manager, containers, id]
+        );
+
+        res.status(200).json({
+            statusCode: 200,
+            status: true,
+            message: 'Контейнер обновлен успешно',
+        });
+        
+    } catch (error) {
+        console.error('Error updating data:', error);
+        res.status(500).json({
+        statusCode: 500,
+        status: false,
+        message: 'Произошла ошибка при обновлении контейнера',
+        error: error.message
+      });
+    }
+}
